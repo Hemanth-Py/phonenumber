@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Phone Input with Dial Code</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/css/intlTelInput.min.css"/>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; }
+    .container { max-width: 400px; }
+    input { width: 100%; padding: 10px; font-size: 16px; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Phone Input</h2>
+  <input id="phone" type="tel" placeholder="Enter phone number" />
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/intlTelInput.min.js"></script>
+<script>
+  const input = document.querySelector("#phone");
+
+  const iti = window.intlTelInput(input, {
+    initialCountry: "auto",
+    nationalMode: false,
+    utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js",
+    geoIpLookup: function (callback) {
+      callback("sg"); // or use ipinfo lookup with a token if you want
+    }
+  });
+
+  input.addEventListener("paste", function (e) {
+    setTimeout(() => {
+      const nationalNumber = iti.getNumber(intlTelInputUtils.numberFormat.NATIONAL);
+      input.value = nationalNumber;
+    }, 50); // wait for paste to apply
+  });
+</script>
+
+</body>
+</html>
