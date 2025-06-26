@@ -18,6 +18,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/intlTelInput.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js"></script>
 <script>
   const input = document.querySelector("#phone");
 
@@ -26,15 +27,36 @@
     nationalMode: false,
     utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js",
     geoIpLookup: function (callback) {
-      callback("sg"); // or use ipinfo lookup with a token if you want
+      callback("in"); // Default to India
     }
   });
 
-  input.addEventListener("paste", function (e) {
-    setTimeout(() => {
-      const nationalNumber = iti.getNumber(intlTelInputUtils.numberFormat.NATIONAL);
-      input.value = nationalNumber;
-    }, 50); // wait for paste to apply
+  function updateNationalNumber() {
+    // Only run if input starts with "+" (dial code present)
+    if (input.value.startsWith("+")) {
+      const isValid = iti.isValidNumber();
+      if (isValid) {
+        const nationalNumber = iti.getNumber(intlTelInputUtils.numberFormat.NATIONAL);
+        input.value = nationalNumber;
+      }
+    }
+  }
+
+  // On paste
+  input.addEventListener("paste", function () {
+    setTimeout(updateNationalNumber, 50);
+  });
+
+  // On blur (when user finishes typing)
+  input.addEventListener("blur", function () {
+    updateNationalNumber();
+  });
+
+  // On enter key
+  input.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+      updateNationalNumber();
+    }
   });
 </script>
 
