@@ -26,16 +26,31 @@
     initialCountry: "auto",
     nationalMode: false,
     utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js",
+    onlyCountries: ["us", "pr", "bd", "in", "sg", "ae", "uz"], // Add more as needed
     geoIpLookup: function (callback) {
-      callback("in"); // Default to India
+      callback("us");
     }
   });
 
+  // Custom area codes that should be treated as Puerto Rico
+  const puertoRicoAreaCodes = ["787", "939"];
+
+  function forcePuertoRicoIfNeeded(fullNumber) {
+    const stripped = fullNumber.replace(/\D/g, "");
+    if (stripped.startsWith("1")) {
+      const areaCode = stripped.substring(1, 4); // After 1
+      if (puertoRicoAreaCodes.includes(areaCode)) {
+        iti.setCountry("pr");
+      }
+    }
+  }
+
   function updateNationalNumber() {
-    // Only run if input starts with "+" (dial code present)
-    if (input.value.startsWith("+")) {
-      const isValid = iti.isValidNumber();
-      if (isValid) {
+    const fullNumber = input.value;
+    if (fullNumber.startsWith("+")) {
+      forcePuertoRicoIfNeeded(fullNumber);
+
+      if (iti.isValidNumber()) {
         const nationalNumber = iti.getNumber(intlTelInputUtils.numberFormat.NATIONAL);
         input.value = nationalNumber;
       }
@@ -47,11 +62,10 @@
     setTimeout(updateNationalNumber, 50);
   });
 
-  // On blur (when user finishes typing)
-  input.addEventListener("blur", function () {
-    updateNationalNumber();
-  });
+  // On blur
+  input.addEventListener("blur", updateNationalNumber);
 
+  // On Enter
   input.addEventListener("keydown", function (e) {
     if (e.key === "Enter") {
       updateNationalNumber();
