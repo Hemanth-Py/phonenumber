@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Areeba PG Integration</title>
+    <script src="https://epayment.areeba.com/static/checkout/checkout.min.js"
+            data-error="errorCallback"
+            data-cancel="cancelCallback"
+            data-complete="https://dev.konfhub.com/receiptPage?orderId=1234567890">
+    </script>
+    <script type="text/javascript">
+        function errorCallback(error) {
+            console.log("Payment Error: ", JSON.stringify(error));
+            alert("Payment Error: " + JSON.stringify(error));
+        }
+
+        function cancelCallback() {
+            console.log("Payment cancelled");
+            alert("Payment was cancelled.");
+        }
+
+        function initiatePayment(embed = false) {
+            const sessionId = document.getElementById("sessionIdInput").value;
+            if (!sessionId) {
+                alert("Please enter a valid Session ID");
+                return;
+            }
+
+            Checkout.configure({
+                session: {
+                    id: sessionId
+                }
+            });
+
+            if (embed) {
+                Checkout.showEmbeddedPage('#embed-target');
+            } else {
+                Checkout.showPaymentPage();
+            }
+        }
+    </script>
+</head>
+<body>
+    <h2>Areeba Payment Gateway (Manual Session)</h2>
+
+    <label for="sessionIdInput">Enter Areeba Session ID:</label>
+    <input type="text" id="sessionIdInput" placeholder="e.g., SESSION1234567890" style="width: 300px;" />
+    <br><br>
+
+    <input type="button" value="Pay with Embedded Page" onclick="initiatePayment(true);" />
+    <input type="button" value="Pay with Payment Page" onclick="initiatePayment(false);" />
+
+    <div id="embed-target" style="margin-top: 30px;"></div>
+</body>
+</html>
