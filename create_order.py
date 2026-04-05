@@ -1,11 +1,12 @@
 import json
+import os
 import uuid
 import base64
 from urllib import request, error
 
-merchant_id = 'TEST222208056001'
+merchant_id = os.environ.get('AREEBA_MERCHANT_ID', '')
 username = f'merchant.{merchant_id}'
-password = '925365443baa766101126b30a7792c73'
+password = os.environ.get('AREEBA_PASSWORD', '')
 
 # Encode credentials
 credentials = f'{username}:{password}'
